@@ -1,0 +1,47 @@
+﻿@model IEnumerable<ShopAPI.Models.Item>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.item_categoryID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.item_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.item_price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.item_categoryID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.item_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.item_price)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.itemID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.itemID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.itemID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
