@@ -28,23 +28,28 @@ namespace ShopAPI.Controllers
         [HttpPost("login")]
         public ActionResult<Tuple<User,string>> Login([FromBody] UserDto request)
         {
-            var sha1 = new HMACSHA256();
-            var sha1data = sha1.ComputeHash(Encoding.UTF8.GetBytes(request.password));
-            var hashedPassword = UTF8Encoding.UTF8.GetString(sha1data);
-
             using (ApplicationContext db = new ApplicationContext())
             {
                 User? user = db.users.FirstOrDefault(user => user.user_name == request.user_name);
-
-                if (user != null && user.user_passwordHash == hashedPassword)
+                if (user != null)
                 {
-                    string token = CreateToken(user);
-                    _logger.LogInformation((user, token).ToString());
-                    return (user, token).ToTuple();
+                    var sha1 = new HMACSHA256(Encoding.UTF8.GetBytes(AuthOptions.KEY));
+                    var sha1data = sha1.ComputeHash(Encoding.UTF8.GetBytes(request.password));
+                    var hashedPassword = UTF8Encoding.UTF8.GetString(sha1data);
+                    if (user.user_passwordHash == hashedPassword)
+                    {
+                        string token = CreateToken(user);
+                        _logger.LogInformation((user, token).ToString());
+                        return (user, token).ToTuple();
+                    }
+                    else
+                    {
+                        return BadRequest("Wrong password");
+                    }
                 }
                 else
                 {
-                    return BadRequest("Wrong");
+                    return BadRequest("User doesnt exist");
                 }
             }
         }
@@ -60,9 +65,10 @@ namespace ShopAPI.Controllers
                 }
             }
 
-            var sha1 = new HMACSHA256();
+            var sha1 = new HMACSHA256(Encoding.UTF8.GetBytes(AuthOptions.KEY));
             var sha1data = sha1.ComputeHash(Encoding.UTF8.GetBytes(request.password));
             var hashedPassword = UTF8Encoding.UTF8.GetString(sha1data);
+            _logger.LogInformation(hashedPassword);
 
             User user = new User(
                 userID: 1,

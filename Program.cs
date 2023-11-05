@@ -16,7 +16,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.TokenValidationParameters = new TokenValidationParameters
     {
         //РОЛИ????
-
         // укзывает, будет ли валидироваться издатель при валидации токена
         ValidateIssuer = false,
         // строка, представляющая издателя
@@ -28,7 +27,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         // будет ли валидироваться время существования
         ValidateLifetime = true,
         // установка ключа безопасности
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value!)),
+        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
         // валидация ключа безопасности
         ValidateIssuerSigningKey = true,
     };
@@ -56,6 +55,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors(x => x
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .SetIsOriginAllowed(origin => true) // allow any origin
+                    .AllowCredentials());
 }
 
 app.UseHttpsRedirection();
