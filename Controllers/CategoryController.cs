@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Construction;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ShopAPI.Models;
 using ShopAPI.Tools;
@@ -83,6 +85,23 @@ namespace ShopAPI.Controllers
             {
                 var categories = db.categories.ToList();
                 return JsonConvert.SerializeObject(categories);
+            }
+        }
+
+        [HttpPut("updatecategory", Name = "updatecategory")]
+        public ActionResult putCategory([FromBody] Category category)
+        {
+            using (ApplicationContext db = new ApplicationContext())
+            {
+                List<Category> cat = db.categories.Where(cate => cate.categoryID == category.categoryID).ToList();
+                if(cat != null && cat.Count > 0)
+                {
+                    cat[0].category_name = category.category_name;
+                    db.SaveChanges();
+                    return Ok();
+                }
+                _logger.LogCritical("not found");
+                return BadRequest("Category doesnt exist");
             }
         }
     }
