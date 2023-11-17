@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Common;
 using ShopAPI.Models;
@@ -89,7 +90,10 @@ namespace ShopAPI.Controllers
                 db.users.Add(user);
                 db.SaveChanges();
             }
+
+
             return (user, token).ToTuple();
+
         }
 
         private string CreateToken(User user)

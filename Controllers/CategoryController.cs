@@ -20,18 +20,8 @@ namespace ShopAPI.Controllers
         }
 
         [HttpPost("addcategory", Name = "addcategory"), Authorize]
-        public ActionResult PostCategory([FromBody] string categoryJson)
+        public ActionResult PostCategory([FromBody] Category category)
         {
-            Category category;
-            try
-            {
-                category = JsonConvert.DeserializeObject<Category>(categoryJson);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.ToString());
-                return new BadRequestObjectResult(e.Message);
-            }
             if (category is not null)
             {
                 try
@@ -41,12 +31,10 @@ namespace ShopAPI.Controllers
                         db.categories.Add(category);
                         db.SaveChanges();
                     }
-                    _logger.LogInformation("oK");
                     return new OkResult();
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e.ToString());
                     return new BadRequestObjectResult(e.Message);
                 }
             }
@@ -88,7 +76,7 @@ namespace ShopAPI.Controllers
             }
         }
 
-        [HttpPut("updatecategory", Name = "updatecategory")]
+        [HttpPut("updatecategory", Name = "updatecategory"), Authorize]
         public ActionResult putCategory([FromBody] Category category)
         {
             using (ApplicationContext db = new ApplicationContext())
